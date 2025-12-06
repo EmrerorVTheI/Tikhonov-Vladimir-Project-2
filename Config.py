@@ -1,0 +1,10 @@
+width, height = 1600, 800
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+LIGHT_BLUE = (100, 100, 255)
+BLACK = (0, 0, 0)
+button_x, button_y = 650, 350
+button_width, button_height = 300, 100
+text_x, text_y = 100, 350
+text_width, text_height = 1400, 50
+move_type = -1
