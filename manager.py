@@ -3,33 +3,23 @@ import shutil
 import pygame
 import sys
 import pyperclip
+from Config import width, height, WHITE, BLUE, LIGHT_BLUE, BLACK, button_x, button_y, button_width, button_height, text_x, text_y, text_width, text_height, move_type
+
 pygame.init()
 
-width, height = 1600, 800
+font = pygame.font.Font(None, 40)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Файловый Менеджер 1.0")
 
-WHITE = (255, 255, 255)
-BLUE = (0, 0, 255)
-LIGHT_BLUE = (100, 100, 255)
-BLACK = (0, 0, 0)
-button_x, button_y = 650, 350
-button_width, button_height = 300, 100
-font = pygame.font.Font(None, 40)
 btn1 = True
-
-text_x, text_y = 100, 350
-text_width, text_height = 1400, 50
-user_text = "Введите путь к файлу без кавычек и нажмите RShift"
-text1 = False
-
+user_text = ''
+text1 = False 
 folder1 = False
 files_count = 0
-move_type = -1
 chosen_file = ''
 search1 = False
 search2 = False
-search_text = 'Введите ключевое слово и нажмите RShift'
+search_text = ''
 found_files = []
 
 running = True
@@ -47,20 +37,20 @@ while running:
             elif folder1 == True:
                 search2 = False
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                if (20 <= mouse_x <= 1580 and
+                if (20 <= mouse_x <= width - 20 and
                     20 <= mouse_y <= y_position):
                     if move_type == -1:
-                        chosen_file = files[(mouse_y - 20) // 50]
+                        chosen_file = files[(mouse_y - 20) // text_height]
                         move_type = 0
                     elif move_type == 0:
-                        if files[(mouse_y - 20) // 50] == chosen_file:
+                        if files[(mouse_y - 20) // text_height] == chosen_file:
                             move_type = -1
                             os.remove(user_text+'/'+chosen_file)   
                         else:
                             move_type = -1
-                            shutil.copy(user_text+'/'+chosen_file, user_text+'/'+files[(mouse_y - 20) // 50])   
-                if (20 <= mouse_x <= 1580 and
-                    y_position + 50 <= mouse_y <= y_position + 100):  
+                            shutil.copy(user_text+'/'+chosen_file, user_text+'/'+files[(mouse_y - 20) // text_height])   
+                if (20 <= mouse_x <= width - 20 and
+                    y_position + text_height <= mouse_y <= y_position + 2 * text_height):  
                     search1 = True                  
         elif event.type == pygame.KEYDOWN:
             if text1 == True:
@@ -111,17 +101,21 @@ while running:
     if text1 == True:
         text_surface = font.render(user_text, True, BLACK)
         screen.blit(text_surface, (text_x + 5, text_y + 10))
-        add_text = font.render('удалить этот текст можно нажав Delete', True, BLACK)
-        screen.blit(add_text, (text_x + 5, text_y + 50))
-        add2_text = font.render('можно вставить текст нажав LCtrl', True, BLACK)
-        screen.blit(add2_text, (text_x + 5, text_y + 100))
+        add_text = font.render('Введите путь к файлу без кавычек и нажмите RShift', True, BLACK) 
+        screen.blit(add_text, (text_x + 5, text_y + text_height + 10))
+        add2_text = font.render('Удалить этот текст можно нажав Delete', True, BLACK)
+        screen.blit(add2_text, (text_x + 5, text_y + 2 * text_height + 10))
+        add3_text = font.render('Можно вставить текст нажав LCtrl', True, BLACK)
+        screen.blit(add3_text, (text_x + 5, text_y + 3 * text_height + 10))
     elif search1 == True:
         text_surface = font.render(search_text, True, BLACK)
-        screen.blit(text_surface, (25, y_position + 60))
-        add_text = font.render('удалить этот текст можно нажав Delete', True, BLACK)
-        screen.blit(add_text, (25, y_position + 110))
-        add2_text = font.render('можно вставить текст нажав LCtrl', True, BLACK)
-        screen.blit(add2_text, (25, y_position + 160))
+        screen.blit(text_surface, (25, y_position + text_height + 10))
+        add_text = font.render('Введите ключевое слово и нажмите RShift', True, BLACK)
+        screen.blit(add_text, (25, y_position + 2 * text_height + 10))
+        add2_text = font.render('Удалить этот текст можно нажав Delete', True, BLACK)
+        screen.blit(add2_text, (25, y_position + 3 * text_height + 10))
+        add3_text = font.render('Можно вставить текст нажав LCtrl', True, BLACK)
+        screen.blit(add3_text, (25, y_position + 4 * text_height + 10))
     if folder1 == True:
         if search2 == False:
             files = os.listdir(folder_path)
@@ -129,24 +123,23 @@ while running:
             for file in files:
                 text_surface = font.render(file, True, BLACK)
                 screen.blit(text_surface, (20, y_position))
-                y_position += 50
-            files_count = y_position // 50
+                y_position += text_height
+            files_count = y_position // text_height
             files_text = font.render('Количество файлов в папке: '+str(files_count), True, BLACK)
             screen.blit(files_text, (20, y_position))
-            pygame.draw.rect(screen, BLACK, (20, y_position + 50, 1560, 50), 2)
+            pygame.draw.rect(screen, BLACK, (20, y_position + text_height, width - 40, text_height), 2)
         else:
             files = found_files
             y_position = 20
             for file in files:
                 text_surface = font.render(file, True, BLACK)
                 screen.blit(text_surface, (20, y_position))
-                y_position += 50
-            files_count = y_position // 50
-            files_text = font.render('Найденное количество файлов: '+str(files_count), True, BLACK)
+                y_position += text_height
+            files_count = y_position // text_height
+            files_text = font.render('Найденное количество файлов: ' + str(files_count), True, BLACK)
             screen.blit(files_text, (20, y_position))
-            pygame.draw.rect(screen, BLACK, (20, y_position + 50, 1560, 50), 2)
+            pygame.draw.rect(screen, BLACK, (20, y_position + text_height, width - 40, text_height), 2)
     pygame.display.flip()
 
 pygame.quit()
-
 sys.exit()
